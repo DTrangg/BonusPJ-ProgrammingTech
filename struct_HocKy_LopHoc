@@ -1,16 +1,16 @@
 // quản lý lớp học
 struct Class {
-    char className[20]; // tên lớp
+    string className; // tên lớp
     Student* students; // danh sách sinh viên
     int studentCount; // số sinh viên trong 1 lớp
 };
 
 // quản lý học kỳ
 struct Semester {
-    int semesterId; // id học kỳ
-    char schoolYear[20]; // năm học
-    char startDate[20]; // ngày bắt đầu học kỳ
-    char endDate[20]; // ngày kết thúc học kỳ
+    string semesterId; // id học kỳ
+    string schoolYear; // năm học
+    string startDate; // ngày bắt đầu học kỳ
+    string endDate; // ngày kết thúc học kỳ
     Course* courses; // danh sách khóa học trong học kỳ đó
     int courseCount; // số khóa học trong học kỳ đó
 };
