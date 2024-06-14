@@ -1,18 +1,18 @@
 // Cấu trúc User
 struct User {
-    string username[20];
-    string password[20];
-    string email[20];
-    string fullName[20];
-    string role[10];
+    string username;
+    string password;
+    string email;
+    string fullName;
+    string role;
 };
 
 // Cấu trúc Sinh viên (Student)
 struct Student {
-    string studentId[10];
-    string firstName[20];
-    string lastName[20];
-    string gender[3];
+    string studentId;
+    string firstName;
+    string lastName;
+    string gender;
     string dateOfBirth;
-    string socialId[10];
+    string socialId;
 };
