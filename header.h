@@ -1,3 +1,4 @@
+
 // Cấu trúc User (Người dùng)
 struct User {
     string userName;    // tên tài khoản
