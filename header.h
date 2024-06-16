@@ -1,3 +1,5 @@
+#include <iostream>
+#include <string>
 
 // Cấu trúc User (Người dùng)
 struct User {
@@ -50,6 +52,7 @@ struct Semester {
 
 // Cấu trúc Score (Điểm số)
 struct Score {
+    string courseId;      // mã học phần
     string studentId;     // mã số sinh viên
     string studentName;   // tên sinh viên
     double totalMark;     // tổng điểm
