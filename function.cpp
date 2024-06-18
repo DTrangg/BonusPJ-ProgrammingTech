@@ -399,7 +399,7 @@ void importScoreboard(Course &course, string fileName)
     file.close();
 }
 
-// 21. View a score of a student in a course
+// 24. View a score of a student in a course
 void viewScore(string courseId, string studentId)
 {
     int check = courseExists(courseId);
