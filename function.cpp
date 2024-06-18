@@ -1,20 +1,21 @@
-#include <header.h>
-#include <fstream>
-
-using namespace std;
+#include "Struct.h"
 
 // Biến toàn cục lưu trữ học kỳ
-Semester* semesters_ = NULL;
+Semester *semesters_ = NULL;
 int numOfSemesters_ = 0;
-Semester* currentSemester = NULL;
+Semester *currentSemester = NULL;
 
-Class* classes_;
+Class *classes_;
 int numOfClasses_;
 
+/*-----------------------------------------THY---------------------------------------------*/
+
 // Hàm tạo năm học
-void createSchoolYear(string& schoolYear) {
-    /*Semester* newSemesters = new Semester[numOfSemesters_ + 1];
-    for (int i = 0; i < numOfSemesters_; i++) {
+void createSchoolYear(string &schoolYear)
+{
+    Semester *newSemesters = new Semester[numOfSemesters_ + 1];
+    for (int i = 0; i < numOfSemesters_; i++)
+    {
         newSemesters[i] = semesters_[i];
     }
     newSemesters[numOfSemesters_].schoolYear = schoolYear;
@@ -22,14 +23,16 @@ void createSchoolYear(string& schoolYear) {
     newSemesters[numOfSemesters_].courses = NULL;
     numOfSemesters_++;
     delete[] semesters_;
-    semesters_ = newSemesters;*/
+    semesters_ = newSemesters;
     cout << "School year " << schoolYear << " created successfully." << endl;
 }
 
 // Hàm tạo lớp học cho sinh viên năm nhất
-void createClass(string& className) {
-    Class* newClasses = new Class[numOfClasses_ + 1];
-    for (int i = 0; i < numOfClasses_; i++) {
+void createClass(string &className)
+{
+    Class *newClasses = new Class[numOfClasses_ + 1];
+    for (int i = 0; i < numOfClasses_; i++)
+    {
         newClasses[i] = classes_[i];
     }
     newClasses[numOfClasses_].className = className;
@@ -42,11 +45,15 @@ void createClass(string& className) {
 }
 
 // Hàm thêm sinh viên năm nhất vào lớp năm nhất
-void addNewStudentToClass(string& className, Student& student) {
-    for (int i = 0; i < numOfClasses_; i++) {
-        if (classes_[i].className == className) {
-            Student* newStudents = new Student[classes_[i].numOfStudents + 1];
-            for (int j = 0; j < classes_[i].numOfStudents; j++) {
+void addNewStudentToClass(string &className, Student &student)
+{
+    for (int i = 0; i < numOfClasses_; i++)
+    {
+        if (classes_[i].className == className)
+        {
+            Student *newStudents = new Student[classes_[i].numOfStudents + 1];
+            for (int j = 0; j < classes_[i].numOfStudents; ++j)
+            {
                 newStudents[j] = classes_[i].students[j];
             }
             newStudents[classes_[i].numOfStudents] = student;
@@ -54,7 +61,7 @@ void addNewStudentToClass(string& className, Student& student) {
             delete[] classes_[i].students;
             classes_[i].students = newStudents;
             cout << "Student " << student.studentId << " added to class " << className << " successfully." << endl;
-            
+
             // giả sử classname là duy nhất trong danh sách lớp
             return;
         }
@@ -63,33 +70,39 @@ void addNewStudentToClass(string& className, Student& student) {
 }
 
 // Hàm tách chuỗi CSV thành các trường riêng biệt
-void splitCSVLine(string& line, string fields[], int numFields) {
+void splitCSVLine(string &line, string fields[], int numFields)
+{
     int fieldIndex = 0;
     int start = 0;
     int end = line.find(',');
-    while (end != string::npos && fieldIndex < numFields) {
+    while (end != string::npos && fieldIndex < numFields)
+    {
         fields[fieldIndex++] = line.substr(start, end - start);
         start = end + 1;
         end = line.find(',', start);
     }
-    if (fieldIndex < numFields) {
+    if (fieldIndex < numFields)
+    {
         fields[fieldIndex] = line.substr(start);
     }
 }
 
 // Hàm import CSV file chứa danh sách sinh viên vào hệ thống
-void importStudentsFromCSV(string& fileName, string& className) {
+void importStudentsFromCSV(string &fileName, string &className)
+{
     ifstream file(fileName);
-    if (!file) {
+    if (!file)
+    {
         cout << "Could not open file " << fileName << endl;
         return;
     }
 
     string line;
-    while (getline(file, line)) {
+    while (getline(file, line))
+    {
         string fields[6]; // student lưu 6 thuộc tính
         splitCSVLine(line, fields, 6);
-        Student student = { fields[0], fields[1], fields[2], fields[3], fields[4], fields[5] };
+        Student student = {fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]};
         addNewStudentToClass(className, student);
     }
     file.close();
@@ -97,23 +110,27 @@ void importStudentsFromCSV(string& fileName, string& className) {
 }
 
 // Hàm tạo học kỳ
-void createSemester(string& semesterId, string& schoolYear, string& startDate, string& endDate) {
+void createSemester(string &semesterId, string &schoolYear, string &startDate, string &endDate)
+{
     // Kiểm tra điều kiện học kỳ chỉ có thể là 1, 2, hoặc 3
-    if (semesterId != "1" && semesterId != "2" && semesterId != "3") {
+    if (semesterId != "1" && semesterId != "2" && semesterId != "3")
+    {
         cout << "Invalid semester ID. Only 1, 2, or 3 are allowed." << endl;
         return;
     }
 
-    // Kiểm tra xem học kỳ này đã tồn tại chưa
-    for (int i = 0; i < numOfSemesters_; i++) {
-        if (semesters_[i].schoolYear == schoolYear && semesters_[i].semesterId == semesterId) {
+    for (int i = 0; i < numOfSemesters_; i++)
+    {
+        if (semesters_[i].schoolYear == schoolYear && semesters_[i].semesterId == semesterId)
+        {
             cout << "Semester " << semesterId << " already exists for school year " << schoolYear << endl;
             return;
         }
     }
 
-    Semester* newSemesters = new Semester[numOfSemesters_ + 1];
-    for (int i = 0; i < numOfSemesters_; i++) {
+    Semester *newSemesters = new Semester[numOfSemesters_ + 1];
+    for (int i = 0; i < numOfSemesters_; i++)
+    {
         newSemesters[i] = semesters_[i];
     }
 
@@ -133,91 +150,308 @@ void createSemester(string& semesterId, string& schoolYear, string& startDate, s
 }
 
 // Hàm hiển thị danh sách các lớp học
-void viewListOfClasses() {
-    if (numOfClasses_ == 0) {
+void viewListOfClasses()
+{
+    if (numOfClasses_ == 0)
+    {
         cout << "No classes available." << endl;
         return;
     }
 
     cout << "List of Classes:" << endl;
-    for (int i = 0; i < numOfClasses_; i++) {
+    for (int i = 0; i < numOfClasses_; i++)
+    {
         cout << "Class Name: " << classes_[i].className << endl;
         cout << "Number of Students: " << classes_[i].numOfStudents << endl;
-        cout << endl << endl;
+        cout << endl
+             << endl;
     }
 }
 
-// Hàm xem bảng điểm và tính GPA của một lớp trong kỳ hiện tại
-void viewClassScores(Class lop) {
-    cout << "Scores for class: " << lop.className << endl;
+/*-----------------------------------------TRANG---------------------------------------------*/
 
-    for (int i = 0; i < lop.numOfStudents; i++) {
-        Student student = lop.students[i];
-        cout << "Student ID: " << student.studentId 
-            << ", Name: " << student.lastName << " " << student.firstName << endl;
+// Hàm kiểm tra sự tồn tại của khóa học dựa trên courseID
+int courseExists(string courseId)
+{
+    for (int i = 0; i < currentSemester->numOfCourses; i++)
+    {
+        if (currentSemester->courses[i].courseId == courseId)
+            return i;
+    }
+    return -1;
+}
 
-        double totalMarks = 0.0;
-        int totalCredits = 0;
-        bool foundScore = false;
+// 7. Add a course to this semester
+void addNewCourseToSemester(Course newCourse)
+{
+    if (currentSemester == nullptr)
+    {
+        cout << "No current semester available." << endl;
+        return;
+    }
 
-        for (int k = 0; k < currentSemester->numOfCourses; k++) {
-            Course course = currentSemester->courses[k];
-            for (int l = 0; l < course.numOfStudents; l++) {
-                if (course.scores[l].studentId == student.studentId) {
-                    Score score = course.scores[l];
-                    cout << "Course ID: " << course.courseId << ", Course Name: " << course.courseName << endl;
-                    cout << "Total Mark: " << score.totalMark << endl;
+    if (courseExists(newCourse.courseId) != -1)
+    {
+        cout << "Course " << newCourse.courseId << " has already existed." << endl;
+        return;
+    }
 
-                    totalMarks += score.totalMark * course.numOfCredits;
-                    totalCredits += course.numOfCredits;
+    int num = currentSemester->numOfCourses;
+    Course *newCourses = new Course[num + 1];
 
-                    foundScore = true;
-                }
+    int i = 0;
+    while (i < num)
+    {
+        newCourses[i] = currentSemester->courses[i];
+        i++;
+    }
+    newCourses[i] = newCourse;
+    currentSemester->numOfCourses++;
+
+    delete[] currentSemester->courses;
+    currentSemester->courses = newCourses;
+
+    cout << "Course " << newCourse.courseId << " added to this semester successfully." << endl;
+}
+
+// 9.1. View a course
+void viewCourse(Course course)
+{
+    int check = courseExists(course.courseId);
+    if (check < 0)
+    {
+        cout << "Course " << course.courseId << " not found." << endl;
+        return;
+    }
+
+    cout << "Course ID:         " << course.courseId << endl;
+    cout << "Course Name:       " << course.courseName << endl;
+    cout << "Class Name:        " << course.className << endl;
+    cout << "Teacher:           " << course.teacher << endl;
+    cout << "Number of Credits: " << course.numOfCredits << endl;
+    cout << "Enrollment:        " << course.numOfStudents << "/" << course.courseSize << endl;
+    cout << "Session:           " << course.session << endl;
+}
+
+// 9. View the list of courses (in this semester)
+void viewListOfCourses()
+{
+    if (currentSemester->numOfCourses == 0)
+    {
+        cout << "No courses available." << endl;
+        return;
+    }
+
+    cout << "List Of Courses:" << endl;
+    for (int i = 0; i < currentSemester->numOfCourses; i++)
+    {
+        viewCourse(currentSemester->courses[i]);
+        cout << endl;
+    }
+}
+
+// 10. Update course information
+void updateCourse(Course &course,
+                  const string *courseId = nullptr,
+                  const string *courseName = nullptr,
+                  const string *className = nullptr,
+                  const string *teacher = nullptr,
+                  const int *numOfCredits = nullptr,
+                  const int *courseSize = nullptr,
+                  const string *session = nullptr)
+{
+    if (courseId)
+        course.courseId = *courseId;
+    if (courseName)
+        course.courseName = *courseName;
+    if (className)
+        course.className = *className;
+    if (teacher)
+        course.teacher = *teacher;
+    if (numOfCredits)
+        course.numOfCredits = *numOfCredits;
+    if (courseSize)
+        course.courseSize = *courseSize;
+    if (session)
+        course.session = *session;
+}
+
+// 13. Delete a course
+void deleteCourse(string courseID)
+{
+    if (currentSemester == nullptr)
+    {
+        cout << "No current semester available." << endl;
+        return;
+    }
+
+    int num = currentSemester->numOfCourses;
+    if (num == 0)
+    {
+        cout << "No courses available to delete." << endl;
+        return;
+    }
+
+    Course *newCourses = new Course[num - 1];
+    int i = 0;
+    // Tìm khóa học cần xóa
+    while (i < num && currentSemester->courses[i].courseId != courseID)
+    {
+        newCourses[i] = currentSemester->courses[i];
+        i++;
+    }
+    // Nếu không tìm thấy khóa học
+    if (i == num)
+    {
+        cout << "Course " << courseID << " not found." << endl;
+        delete[] newCourses; // Giải phóng bộ nhớ đã cấp phát
+        return;
+    }
+    // Di chuyển các khóa học còn lại
+    while (i < num - 1)
+    {
+        newCourses[i] = currentSemester->courses[i + 1];
+        i++;
+    }
+
+    delete[] currentSemester->courses;
+    currentSemester->courses = newCourses;
+    currentSemester->numOfCourses--;
+
+    cout << "Course " << courseID << " deleted successfully." << endl;
+}
+
+// 14.1. Check if a student has enrolled in a course
+int isStudentInCourse(string studentId, Course course)
+{
+    for (int i = 0; i < course.numOfStudents; ++i)
+    {
+        if (course.scores[i].studentId == studentId)
+            return i;
+    }
+    return -1;
+}
+
+// 14. View a list of courses that a student will study this semester
+void viewStudentCourses(string studentId)
+{
+    bool found = false;
+    for (int i = 0; i < currentSemester->numOfCourses; ++i)
+    {
+        Course currentCourse = currentSemester->courses[i];
+        for (int j = 0; j < currentCourse.numOfStudents; ++j)
+        {
+            if (isStudentInCourse(currentCourse.scores[j].studentId, currentCourse))
+            {
+                found = true;
+                cout << currentCourse.courseId << ": " << currentCourse.courseName << " (" << currentCourse.session << ")" << endl;
+                cout << endl;
+                break;
             }
         }
+    }
 
-        if (foundScore) {
-            double gpa = totalCredits == 0 ? 0 : totalMarks / totalCredits;
-            cout << "GPA: " << gpa << endl;
-        }
-        else {
-            cout << "No scores found for this student." << endl;
-        }
+    if (!found)
+    {
+        cout << "Student " << studentId << " is not registered for any courses this semester." << endl;
     }
 }
 
-// Hàm tính GPA của một sinh viên trong một năm
-double calculateGPAForYear(string studentId, string schoolYear, Semester* semesters, int numOfSemesters) {
-    double totalMarks = 0.0;
-    int totalCredits = 0;
-
-    for (int i = 0; i < numOfSemesters; i++) {
-        Semester semester = semesters[i];
-        if (semester.schoolYear == schoolYear) {
-            for (int j = 0; j < semester.numOfCourses; j++) {
-                Course course = semester.courses[j];
-                for (int k = 0; k < course.numOfStudents; k++) {
-                    if (course.scores[k].studentId == studentId) {
-                        Score score = course.scores[k];
-                        totalMarks += score.totalMark * course.numOfCredits;
-                        totalCredits += course.numOfCredits;
-                    }
-                }
-            }
-        }
+// 20. Import the scoreboard of a course
+void importScoreboard(Course &course, string fileName)
+{
+    int check = courseExists(course.courseId);
+    if (check < 0)
+    {
+        cout << "Course " << course.courseId << " not found." << endl;
+        return;
     }
 
-    return totalCredits == 0 ? 0 : totalMarks / totalCredits;
+    ifstream file(fileName);
+    if (!file.is_open())
+    {
+        cout << "Could not open file " << fileName << endl;
+        return;
+    }
+
+    string line;
+    getline(file, line); // Bỏ qua dòng tiêu đề
+
+    int i = 0;
+    while (getline(file, line))
+    {
+        stringstream ss(line);
+        string token;
+
+        getline(ss, course.scores[i].studentId, ',');   // studentId
+        getline(ss, course.scores[i].studentName, ','); // studentName
+        getline(ss, token, ',');                        // totalMark
+        course.scores[i].totalMark = stod(token);
+        getline(ss, token, ','); // finalMark
+        course.scores[i].finalMark = stod(token);
+        getline(ss, token, ','); // midtermMark
+        course.scores[i].midtermMark = stod(token);
+        getline(ss, token); // otherMark
+        course.scores[i].otherMark = stod(token);
+
+        i++;
+    }
+    file.close();
 }
 
-// Hàm để in ra GPA của tất cả sinh viên trong một lớp cho cả năm
-void viewClassGPAForYear(Class lop, string schoolYear, Semester* semesters, int numOfSemesters) {
-    cout << "GPA for class: " << lop.className << " for school year: " << schoolYear << endl;
-
-    for (int i = 0; i < lop.numOfStudents; i++) {
-        Student& student = lop.students[i];
-        double gpa = calculateGPAForYear(student.studentId, schoolYear, semesters, numOfSemesters);
-        cout << "Student ID: " << student.studentId << ", Name: " << student.lastName 
-            << " " << student.firstName << ", GPA: " << gpa << endl;
+// 21. View a score of a student in a course
+void viewScore(string courseId, string studentId)
+{
+    int check = courseExists(courseId);
+    if (check < 0)
+    {
+        cout << "Course " << courseId << " not found." << endl;
+        return;
     }
+    int check2 = isStudentInCourse(studentId, currentSemester->courses[check]);
+    if (check2 < 0)
+    {
+        cout << "Student " << studentId << " has not enrolled in course " << courseId << endl;
+        return;
+    }
+
+    Score score = currentSemester->courses[check].scores[check2];
+    cout << score.studentId << " - " << score.studentName << endl;
+    cout << ": ";
+    cout << score.totalMark << " | " << score.finalMark << " | " << score.midtermMark << " | " << score.otherMark << endl;
+}
+
+// 21. View the scoreboard of a course
+void viewCourseScoreboard(string courseId)
+{
+    int check = courseExists(courseId);
+    if (check < 0)
+    {
+        cout << "Course " << courseId << " not found." << endl;
+        return;
+    }
+
+    int num = currentSemester->courses[check].numOfStudents;
+    for (int i = 0; i < num; i++)
+    {
+        viewScore(courseId, currentSemester->courses[check].scores[i].studentId);
+        cout << endl;
+    }
+}
+
+// 22. Update a student's result
+void updateScore(Score &score,
+                 const double *totalMark = nullptr,
+                 const double *finalMark = nullptr,
+                 const double *midtermMark = nullptr,
+                 const double *otherMark = nullptr)
+{
+    if (totalMark)
+        score.totalMark = *totalMark;
+    if (finalMark)
+        score.finalMark = *finalMark;
+    if (midtermMark)
+        score.midtermMark = *midtermMark;
+    if (otherMark)
+        score.otherMark = *otherMark;
 }
