@@ -13,7 +13,7 @@ int numOfClasses_;
 
 // Hàm tạo năm học
 void createSchoolYear(string& schoolYear) {
-    Semester* newSemesters = new Semester[numOfSemesters_ + 1];
+    /*Semester* newSemesters = new Semester[numOfSemesters_ + 1];
     for (int i = 0; i < numOfSemesters_; i++) {
         newSemesters[i] = semesters_[i];
     }
@@ -22,7 +22,7 @@ void createSchoolYear(string& schoolYear) {
     newSemesters[numOfSemesters_].courses = NULL;
     numOfSemesters_++;
     delete[] semesters_;
-    semesters_ = newSemesters;
+    semesters_ = newSemesters;*/
     cout << "School year " << schoolYear << " created successfully." << endl;
 }
 
@@ -46,7 +46,7 @@ void addNewStudentToClass(string& className, Student& student) {
     for (int i = 0; i < numOfClasses_; i++) {
         if (classes_[i].className == className) {
             Student* newStudents = new Student[classes_[i].numOfStudents + 1];
-            for (int j = 0; j < classes_[i].numOfStudents; ++j) {
+            for (int j = 0; j < classes_[i].numOfStudents; j++) {
                 newStudents[j] = classes_[i].students[j];
             }
             newStudents[classes_[i].numOfStudents] = student;
@@ -104,6 +104,7 @@ void createSemester(string& semesterId, string& schoolYear, string& startDate, s
         return;
     }
 
+    // Kiểm tra xem học kỳ này đã tồn tại chưa
     for (int i = 0; i < numOfSemesters_; i++) {
         if (semesters_[i].schoolYear == schoolYear && semesters_[i].semesterId == semesterId) {
             cout << "Semester " << semesterId << " already exists for school year " << schoolYear << endl;
@@ -143,5 +144,80 @@ void viewListOfClasses() {
         cout << "Class Name: " << classes_[i].className << endl;
         cout << "Number of Students: " << classes_[i].numOfStudents << endl;
         cout << endl << endl;
+    }
+}
+
+// Hàm xem bảng điểm và tính GPA của một lớp trong kỳ hiện tại
+void viewClassScores(Class lop) {
+    cout << "Scores for class: " << lop.className << endl;
+
+    for (int i = 0; i < lop.numOfStudents; i++) {
+        Student student = lop.students[i];
+        cout << "Student ID: " << student.studentId 
+            << ", Name: " << student.lastName << " " << student.firstName << endl;
+
+        double totalMarks = 0.0;
+        int totalCredits = 0;
+        bool foundScore = false;
+
+        for (int k = 0; k < currentSemester->numOfCourses; k++) {
+            Course course = currentSemester->courses[k];
+            for (int l = 0; l < course.numOfStudents; l++) {
+                if (course.scores[l].studentId == student.studentId) {
+                    Score score = course.scores[l];
+                    cout << "Course ID: " << course.courseId << ", Course Name: " << course.courseName << endl;
+                    cout << "Total Mark: " << score.totalMark << endl;
+
+                    totalMarks += score.totalMark * course.numOfCredits;
+                    totalCredits += course.numOfCredits;
+
+                    foundScore = true;
+                }
+            }
+        }
+
+        if (foundScore) {
+            double gpa = totalCredits == 0 ? 0 : totalMarks / totalCredits;
+            cout << "GPA: " << gpa << endl;
+        }
+        else {
+            cout << "No scores found for this student." << endl;
+        }
+    }
+}
+
+// Hàm tính GPA của một sinh viên trong một năm
+double calculateGPAForYear(string studentId, string schoolYear, Semester* semesters, int numOfSemesters) {
+    double totalMarks = 0.0;
+    int totalCredits = 0;
+
+    for (int i = 0; i < numOfSemesters; i++) {
+        Semester semester = semesters[i];
+        if (semester.schoolYear == schoolYear) {
+            for (int j = 0; j < semester.numOfCourses; j++) {
+                Course course = semester.courses[j];
+                for (int k = 0; k < course.numOfStudents; k++) {
+                    if (course.scores[k].studentId == studentId) {
+                        Score score = course.scores[k];
+                        totalMarks += score.totalMark * course.numOfCredits;
+                        totalCredits += course.numOfCredits;
+                    }
+                }
+            }
+        }
+    }
+
+    return totalCredits == 0 ? 0 : totalMarks / totalCredits;
+}
+
+// Hàm để in ra GPA của tất cả sinh viên trong một lớp cho cả năm
+void viewClassGPAForYear(Class lop, string schoolYear, Semester* semesters, int numOfSemesters) {
+    cout << "GPA for class: " << lop.className << " for school year: " << schoolYear << endl;
+
+    for (int i = 0; i < lop.numOfStudents; i++) {
+        Student& student = lop.students[i];
+        double gpa = calculateGPAForYear(student.studentId, schoolYear, semesters, numOfSemesters);
+        cout << "Student ID: " << student.studentId << ", Name: " << student.lastName 
+            << " " << student.firstName << ", GPA: " << gpa << endl;
     }
 }
