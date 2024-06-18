@@ -34,7 +34,7 @@ struct Course {
     string teacher;       // giáo viên phụ trách
     int numOfCredits;     // số tín chỉ
     int courseSize;       // số lượng sinh viên tối đa
-    Student* students;    // danh sách sinh viên đăng ký
+    Score* scores;
     int numOfStudents;    // số lượng sinh viên đăng ký
     string session;	      // buổi học (vd: MON/S1, TUE/S2 ...)
                                 (S1 (07:30), S2 (09:30), S3(13:30), S4 (15:30))
@@ -52,7 +52,6 @@ struct Semester {
 
 // Cấu trúc Score (Điểm số)
 struct Score {
-    string courseId;      // mã học phần
     string studentId;     // mã số sinh viên
     string studentName;   // tên sinh viên
     double totalMark;     // tổng điểm
