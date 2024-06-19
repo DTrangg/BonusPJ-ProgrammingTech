@@ -457,7 +457,7 @@ void updateScore(Score &score,
 }
 
 
-/*-----------------------------------------TRING---------------------------------------------*/
+/*-----------------------------------------TRINH---------------------------------------------*/
 // Hàm đăng nhập
 User* login(User* users, int numUsers, string username, string password) {
     for (int i = 0; i < numUsers; i++) {
@@ -486,5 +486,161 @@ void logout(User*& currentUser) {
     currentUser = NULL;
     cout << "Logged out successfully!" << endl;
 }
+
+// Tải tệp CSV chứa danh sách sinh viên đăng ký học phần
+void uploadCSV(string filePath, Course& course) {
+    ifstream file(filePath);
+    if (!file.is_open()) {
+        cout << "Failed to open file!" << endl;
+        return;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string studentId, firstName, lastName, gender, dateOfBirth, socialId;
+        getline(ss, studentId, ',');
+        getline(ss, firstName, ',');
+        getline(ss, lastName, ',');
+        getline(ss, gender, ',');
+        getline(ss, dateOfBirth, ',');
+        getline(ss, socialId, ',');
+
+        Student student;
+        student.studentId = studentId;
+        student.firstName = firstName;
+        student.lastName = lastName;
+        student.gender = gender;
+        student.dateOfBirth = dateOfBirth;
+        student.socialId = socialId;
+
+        addStudentToCourse(course, student);
+    }
+
+    file.close();
+    cout << "CSV file uploaded successfully!" << endl;
+}
+
+// Xem danh sách sinh viên trong một lớp
+void viewStudentsInClass(Class* classes, int numOfClasses, string className) {
+    for (int i = 0; i < numOfClasses; i++) {
+        if (classes[i].className == className) {
+            cout << "Students in Class " << className << ":" << endl;
+            for (int j = 0; j < classes[i].numOfStudents; j++) {
+                cout << "Student ID: " << classes[i].students[j].studentId << endl;
+                cout << "Full Name: " << classes[i].students[j].firstName << " " << classes[i].students[j].lastName << endl;
+                cout << "Gender: " << classes[i].students[j].gender << endl;
+                cout << "Date of Birth: " << classes[i].students[j].dateOfBirth << endl;
+                cout << "Social ID: " << classes[i].students[j].socialId << endl;
+                cout << endl;
+            }
+            return;
+        }
+    }
+    cout << "Class not found!" << endl;
+}
+
+// Xem danh sách sinh viên trong một khóa học
+void viewStudentsInCourse(Course* courses, int numOfCourses, string courseId) {
+    for (int i = 0; i < numOfCourses; i++) {
+        if (courses[i].courseId == courseId) {
+            cout << "Students in Course " << courseId << ":" << endl;
+            for (int j = 0; j < courses[i].numOfStudents; j++) {
+                cout << "Student ID: " << courses[i].students[j].studentId << endl;
+                cout << "Full Name: " << courses[i].students[j].firstName << " " << courses[i].students[j].lastName << endl;
+                cout << "Gender: " << courses[i].students[j].gender << endl;
+                cout << "Date of Birth: " << courses[i].students[j].dateOfBirth << endl;
+                cout << "Social ID: " << courses[i].students[j].socialId << endl;
+                cout << endl;
+            }
+            return;
+        }
+    }
+    cout << "Course not found!" << endl;
+}
+
+
+
+// Hàm thêm sinh viên vào khóa học
+void addStudentToCourse(Course& course, const Student& student)
+{
+    if (course.numOfStudents >= course.courseSize)
+    {
+        cout << "The course is already full. Cannot add more students." << endl;
+        return;
+    }
+
+    // Kiểm tra xem học sinh đã đăng ký trong khóa học chưa
+    for (int i = 0; i < course.numOfStudents; i++)
+    {
+        if (course.scores[i].studentId == student.studentId)
+        {
+            cout << "Student " << student.studentId << " is already enrolled in the course." << endl;
+            return;
+        }
+    }
+
+    // Thêm học sinh vào khóa học
+    course.scores[course.numOfStudents] = Score();
+    course.scores[course.numOfStudents].studentId = student.studentId;
+    course.scores[course.numOfStudents].studentName = student.firstName + " " + student.lastName;
+    course.numOfStudents++;
+
+    cout << "Student " << student.studentId << " has been added to the course." << endl;
+}
+
+
+// Hàm loại bỏ học sinh khỏi khóa học
+void removeStudentFromCourse(Course& course, const string& studentId)
+{
+    bool found = false;
+    int index = -1;
+
+    // Tìm vị trí của học sinh trong danh sách điểm số của khóa học
+    for (int i = 0; i < course.numOfStudents; i++)
+    {
+        if (course.scores[i].studentId == studentId)
+        {
+            found = true;
+            index = i;
+            break;
+        }
+    }
+
+    if (found)
+    {
+        // Dời các phần tử phía sau về trước để loại bỏ học sinh
+        for (int i = index; i < course.numOfStudents - 1; i++)
+        {
+            course.scores[i] = course.scores[i + 1];
+        }
+
+        course.numOfStudents--;
+
+        cout << "Student " << studentId << " has been removed from the course." << endl;
+    }
+    else
+    {
+        cout << "Student " << studentId << " is not enrolled in the course." << endl;
+    }
+}
+
+// Hàm xuất danh sách sinh viên trong 1 khóa học ra file CSV
+void exportStudentsToCSV(Course& course, string filePath) {
+    ofstream file(filePath);
+    if (!file.is_open()) {
+        cout << "Failed to create file!" << endl;
+        return;
+    }
+
+    file << "No,studentID,StudentFullName" << endl;
+    for (int i = 0; i < course.numOfStudents; i++) {
+        file << i + 1 << "," << course.students[i].studentId << "," << course.students[i].firstName << " " << course.students[i].lastName << endl;
+    }
+
+    file.close();
+    cout << "CSV file exported successfully!" << endl;
+}
+
 
 
