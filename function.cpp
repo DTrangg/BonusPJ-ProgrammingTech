@@ -455,3 +455,36 @@ void updateScore(Score &score,
     if (otherMark)
         score.otherMark = *otherMark;
 }
+
+
+/*-----------------------------------------TRING---------------------------------------------*/
+// Hàm đăng nhập
+User* login(User* users, int numUsers, string username, string password) {
+    for (int i = 0; i < numUsers; i++) {
+        if (users[i].userName == username && users[i].passWord == password) {
+            return &users[i];
+        }
+    }
+    return NULL;
+}
+
+// Hàm xem thông tin hồ sơ người dùng
+void viewProfile(User* user) {
+    cout << "Username: " << user->userName << endl;
+    cout << "Full Name: " << user->fullName << endl;
+    cout << "Role: " << user->role << endl;
+}
+
+// Hàm thay đổi mật khẩu
+void changePassword(User* user, string newPassword) {
+    user->passWord = newPassword;
+    cout << "Password changed successfully!" << endl;
+}
+
+// Hàm đăng xuất
+void logout(User*& currentUser) {
+    currentUser = NULL;
+    cout << "Logged out successfully!" << endl;
+}
+
+
