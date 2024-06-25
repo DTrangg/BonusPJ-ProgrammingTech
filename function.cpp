@@ -1,4 +1,4 @@
-#include "Struct.h"
+#include "header.h"
 
 // Biến toàn cục lưu trữ học kỳ
 Semester *semesters_ = NULL;
@@ -10,7 +10,7 @@ int numOfClasses_;
 
 /*-----------------------------------------THY---------------------------------------------*/
 
-// Hàm tạo năm học
+// 1. Hàm tạo năm học
 void createSchoolYear(string &schoolYear)
 {
     Semester *newSemesters = new Semester[numOfSemesters_ + 1];
@@ -27,7 +27,7 @@ void createSchoolYear(string &schoolYear)
     cout << "School year " << schoolYear << " created successfully." << endl;
 }
 
-// Hàm tạo lớp học cho sinh viên năm nhất
+// 2. Hàm tạo lớp học cho sinh viên năm nhất
 void createClass(string &className)
 {
     Class *newClasses = new Class[numOfClasses_ + 1];
@@ -44,7 +44,7 @@ void createClass(string &className)
     cout << "Class " << className << " created successfully." << endl;
 }
 
-// Hàm thêm sinh viên năm nhất vào lớp năm nhất
+// 3. Hàm thêm sinh viên năm nhất vào lớp năm nhất
 void addNewStudentToClass(string &className, Student &student)
 {
     for (int i = 0; i < numOfClasses_; i++)
@@ -87,7 +87,7 @@ void splitCSVLine(string &line, string fields[], int numFields)
     }
 }
 
-// Hàm import CSV file chứa danh sách sinh viên vào hệ thống
+// 4. Hàm đọc từ CSV file chứa danh sách sinh viên vào hệ thống
 void importStudentsFromCSV(string &fileName, string &className)
 {
     ifstream file(fileName);
@@ -109,7 +109,10 @@ void importStudentsFromCSV(string &fileName, string &className)
     cout << "Students imported from " << fileName << " successfully." << endl;
 }
 
-// Hàm tạo học kỳ
+// 5. Không cần thêm các sinh viên năm 2, 3, 4 vì đã được thêm từ năm nhất 
+// và hàm addNewStudentToClass() sẽ đảm bảo chỉ thêm những sinh viên năm nhất vào các lớp năm nhất
+
+// 6. Hàm tạo học kỳ
 void createSemester(string &semesterId, string &schoolYear, string &startDate, string &endDate)
 {
     // Kiểm tra điều kiện học kỳ chỉ có thể là 1, 2, hoặc 3
@@ -149,7 +152,7 @@ void createSemester(string &semesterId, string &schoolYear, string &startDate, s
     cout << "Semester " << semesterId << " for school year " << schoolYear << " created successfully." << endl;
 }
 
-// Hàm hiển thị danh sách các lớp học
+// 15. Hàm hiển thị danh sách các lớp học
 void viewListOfClasses()
 {
     if (numOfClasses_ == 0)
@@ -159,12 +162,10 @@ void viewListOfClasses()
     }
 
     cout << "List of Classes:" << endl;
-    for (int i = 0; i < numOfClasses_; i++)
-    {
+    for (int i = 0; i < numOfClasses_; i++) {
         cout << "Class Name: " << classes_[i].className << endl;
         cout << "Number of Students: " << classes_[i].numOfStudents << endl;
-        cout << endl
-             << endl;
+        cout << endl;            
     }
 }
 
