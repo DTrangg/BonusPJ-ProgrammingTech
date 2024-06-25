@@ -648,4 +648,101 @@ void exportCourseStudentList(const Course& course, const string& filename) {
     file.close();
 }
 
+void test_createSchoolYear() {
+    string schoolYear = "2024-2025";
+    createSchoolYear(schoolYear);
+}
 
+void test_createClass() {
+    string className = "Class A";
+    createClass(className);
+}
+
+void test_importStudentsFromCSV() {
+    string className = "Class A";
+    string fileName = "students.csv";
+    importStudentsFromCSV(fileName, className);
+}
+
+void test_createSemester() {
+    string semesterId = "1";
+    string schoolYear = "2024-2025";
+    string startDate = "2024-09-01";
+    string endDate = "2024-12-31";
+    createSemester(semesterId, schoolYear, startDate, endDate);
+}
+
+void test_addNewCourseToSemester() {
+    Course newCourse = { "C001", "Programming 101", "Class A", "John Doe", 3, 30, nullptr, 0, "Morning" };
+    addNewCourseToSemester(newCourse);
+}
+
+void test_viewListOfCourses() {
+    viewListOfCourses();
+}
+
+void test_viewStudentCourses() {
+    string studentId = "S001";
+    viewStudentCourses(studentId);
+}
+
+void test_viewListOfClasses() {
+    viewListOfClasses();
+}
+
+void test_importScoreboard() {
+    string courseId = "C001";
+    string fileName = "scoreboard.csv";
+    int courseIndex = courseExists(courseId);
+    if (courseIndex != -1) {
+        importScoreboard(currentSemester->courses[courseIndex], fileName);
+    }
+    else {
+        cout << "Course " << courseId << " not found." << endl;
+    }
+}
+
+void test_viewCourseScoreboard() {
+    string courseId = "C001";
+    viewCourseScoreboard(courseId);
+}
+
+void test_calculateSemesterGPA() {
+    string studentId = "S001";
+    Student student = { studentId, "", "", "", "", "" };
+    double gpa = calculateSemesterGPA(student, *currentSemester);
+    cout << "Semester GPA for student " << studentId << ": " << gpa << endl;
+}
+
+void test_calculateOverallGPA() {
+    string studentId = "S001";
+    Student student = { studentId, "", "", "", "", "" };
+    double gpa = calculateOverallGPA(student);
+    cout << "Overall GPA for student " << studentId << ": " << gpa << endl;
+}
+
+void test_viewClassScoreboard() {
+    string className = "Class A";
+    viewClassScoreboard(className);
+}
+
+void test_main_functions() {
+    test_createSchoolYear();
+    test_createClass();
+    test_importStudentsFromCSV();
+    test_createSemester();
+    test_addNewCourseToSemester();
+    test_viewListOfCourses();
+    //test_viewStudentCourses();
+    test_viewListOfClasses();
+    //test_importScoreboard();
+    test_viewCourseScoreboard();
+    test_calculateSemesterGPA();
+    test_calculateOverallGPA();
+    test_viewClassScoreboard();
+}
+
+int main() {
+    test_main_functions();
+    return 0;
+}
