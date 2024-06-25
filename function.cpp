@@ -169,6 +169,78 @@ void viewListOfClasses()
     }
 }
 
+// 23.1. Tính GPA cho một sinh viên trong một học kỳ cụ thể
+double calculateSemesterGPA(const Student &student, const Semester &semester) {
+    double totalGradePoints = 0.0;
+    int totalCredits = 0;
+    for (int i = 0; i < semester.numOfCourses; i++) {
+        Course &course = semester.courses[i];
+        for (int j = 0; j < course.numOfStudents; j++) {
+            if (course.scores[j].studentId == student.studentId) {
+                double finalMark = course.scores[j].finalMark;
+                totalGradePoints += finalMark * course.numOfCredits;
+                totalCredits += course.numOfCredits;
+            }
+        }
+    }
+    if (totalCredits == 0) return 0.0;
+    return totalGradePoints / totalCredits;
+}
+
+// 23.2. Tính GPA tổng thể cho một sinh viên
+double calculateOverallGPA(const Student &student) {
+    double totalGradePoints = 0.0;
+    int totalCredits = 0;
+    for (int i = 0; i < numOfSemesters_; i++) {
+        Semester &semester = semesters_[i];
+        for (int j = 0; j < semester.numOfCourses; j++) {
+            Course &course = semester.courses[j];
+            for (int k = 0; k < course.numOfStudents; k++) {
+                if (course.scores[k].studentId == student.studentId) {
+                    double finalMark = course.scores[k].finalMark;
+                    totalGradePoints += finalMark * course.numOfCredits;
+                    totalCredits += course.numOfCredits;
+                }
+            }
+        }
+    }
+    if (totalCredits == 0) return 0.0;
+    return totalGradePoints / totalCredits;
+}
+
+// 23.3. Hiển thị bảng điểm của một lớp
+void viewClassScoreboard(string &className) {
+    for (int i = 0; i < numOfClasses_; i++) {
+        if (classes_[i].className == className) {
+            Class &cls = classes_[i];
+            cout << "Scoreboard for Class: " << className << endl;
+            for (int j = 0; j < cls.numOfStudents; j++) {
+                Student &student = cls.students[j];
+                cout << "Student ID: " << student.studentId << ", Name: " << student.firstName << " " << student.lastName << endl;
+                for (int k = 0; k < numOfSemesters_; k++) {
+                    Semester &semester = semesters_[k];
+                    cout << "Semester " << semester.semesterId << " (" << semester.schoolYear << "):" << endl;
+                    for (int l = 0; l < semester.numOfCourses; l++) {
+                        Course &course = semester.courses[l];
+                        for (int m = 0; m < course.numOfStudents; m++) {
+                            if (course.scores[m].studentId == student.studentId) {
+                                cout << "  Course: " << course.courseName << ", Final Mark: " << course.scores[m].finalMark << endl;
+                            }
+                        }
+                    }
+                }
+                double semesterGPA = calculateSemesterGPA(student, *currentSemester);
+                double overallGPA = calculateOverallGPA(student);
+                cout << "GPA for this semester: " << semesterGPA << endl;
+                cout << "Overall GPA: " << overallGPA << endl;
+                cout << endl;
+            }
+            return;
+        }
+    }
+    cout << "Class " << className << " not found." << endl;
+}
+
 /*-----------------------------------------TRANG---------------------------------------------*/
 
 // Hàm kiểm tra sự tồn tại của khóa học dựa trên courseID
