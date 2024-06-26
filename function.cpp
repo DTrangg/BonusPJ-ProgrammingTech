@@ -209,26 +209,23 @@ double calculateOverallGPA(const Student &student) {
 }
 
 // 23.3. Hiển thị bảng điểm của một lớp
-void viewClassScoreboard(string &className) {
+void viewClassScoreboard(string& className) {
     for (int i = 0; i < numOfClasses_; i++) {
         if (classes_[i].className == className) {
-            Class &cls = classes_[i];
+            Class cls = classes_[i];
             cout << "Scoreboard for Class: " << className << endl;
             for (int j = 0; j < cls.numOfStudents; j++) {
-                Student &student = cls.students[j];
+                Student student = cls.students[j];
                 cout << "Student ID: " << student.studentId << ", Name: " << student.firstName << " " << student.lastName << endl;
-                for (int k = 0; k < numOfSemesters_; k++) {
-                    Semester &semester = semesters_[k];
-                    cout << "Semester " << semester.semesterId << " (" << semester.schoolYear << "):" << endl;
-                    for (int l = 0; l < semester.numOfCourses; l++) {
-                        Course &course = semester.courses[l];
-                        for (int m = 0; m < course.numOfStudents; m++) {
-                            if (course.scores[m].studentId == student.studentId) {
-                                cout << "  Course: " << course.courseName << ", Final Mark: " << course.scores[m].finalMark << endl;
-                            }
+                for (int l = 0; l < currentSemester->numOfCourses; l++) {
+                    Course course = currentSemester->courses[l];
+                    for (int m = 0; m < course.numOfStudents; m++) {
+                        if (course.scores[m].studentId == student.studentId) {
+                            cout << "  Course: " << course.courseName << ", Final Mark: " << course.scores[m].finalMark << endl;
                         }
                     }
                 }
+                
                 double semesterGPA = calculateSemesterGPA(student, *currentSemester);
                 double overallGPA = calculateOverallGPA(student);
                 cout << "GPA for this semester: " << semesterGPA << endl;
