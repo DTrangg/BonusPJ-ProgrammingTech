@@ -55,7 +55,7 @@ struct Course
     Score *scores;     // danh sách sinh viên tham gia
     int numOfStudents; // số lượng sinh viên đăng ký
     string session;    // buổi học (vd: MON/S1, TUE/S2 ...)
-                       // (S1 (07:30), S2 (09:30), S3(13:30), S4 (15:30))
+    // (S1 (07:30), S2 (09:30), S3(13:30), S4 (15:30))
 };
 
 // Cấu trúc Semester (Học kỳ)
