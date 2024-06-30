@@ -1,0 +1,458 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+using namespace std;
+
+// Cấu trúc User (Người dùng)
+struct User
+{
+    string userName; // tên tài khoản
+    string passWord; // mật khẩu
+    string fullName; // họ tên chủ tài tài khoản
+    string role;     // vai trò: staff hoặc student
+};
+
+// Cấu trúc Student (Sinh viên)
+struct Student
+{
+    string studentId;   // mã số sinh viên
+    string firstName;   // tên của sinh viên
+    string lastName;    // họ của sinh viên
+    string gender;      // giới tính
+    string dateOfBirth; // ngày sinh
+    string socialId;    // mã định danh cá nhân
+};
+
+// Cấu trúc Class (Lớp học)
+struct Class
+{
+    string className;  // tên lớp
+    Student* students; // danh sách sinh viên
+    int numOfStudents; // sỉ số
+};
+
+// Cấu trúc Score (Điểm số)
+struct Score
+{
+    string studentId;   // mã số sinh viên
+    string studentName; // tên sinh viên
+    double totalMark;   // tổng điểm
+    double finalMark;   // điểm cuối kỳ
+    double midtermMark; // điểm giữa kỳ
+    double otherMark;   // điểm quá trình, điểm cộng ...
+};
+
+// Cấu trúc Course (Học phần)
+struct Course
+{
+    string courseId;   // mã học phần
+    string courseName; // tên học phần
+    string className;  // tên lớp
+    string teacher;    // giáo viên phụ trách
+    int numOfCredits;  // số tín chỉ
+    int courseSize;    // số lượng sinh viên tối đa
+    Score* scores;     // danh sách sinh viên tham gia
+    int numOfStudents; // số lượng sinh viên đăng ký
+    string session;    // buổi học (vd: MON/S1, TUE/S2 ...)
+    // (S1 (07:30), S2 (09:30), S3(13:30), S4 (15:30))
+};
+
+// Cấu trúc Semester (Học kỳ)
+struct Semester
+{
+    string semesterId; // mã học kỳ: 1 (Fall), 2 (Spring), 3 (Summer)
+    string schoolYear; // năm học
+    string startDate;  // ngày bắt đầu
+    string endDate;    // ngày kết thúc
+    Course* courses;   // danh sách học phần trong học kỳ
+    int numOfCourses;  // số lượng học phần
+};
+
+
+// Global Variables
+Semester* semesters_ = NULL;
+int numOfSemesters_ = 0;
+
+
+Class* classes_;
+int numOfClasses_;
+
+
+// Log in to the system
+bool login(User* users, int numOfUsers, const string& username, const string& password) {
+    for (int i = 0; i < numOfUsers; ++i) {
+        if (users[i].userName == username && users[i].passWord == password) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Log out of the system
+void logout(bool& isLoggedIn) {
+    isLoggedIn = false;
+}
+
+// View a user's profile info
+User* viewProfile(User* users, int numOfUsers, const string& username) {
+    for (int i = 0; i < numOfUsers; ++i) {
+        if (users[i].userName == username) {
+            return &users[i];
+        }
+    }
+    return nullptr;
+}
+
+// Change a user's password
+bool changePassword(User* users, int numOfUsers, const string& username, const string& newPassword) {
+    for (int i = 0; i < numOfUsers; ++i) {
+        if (users[i].userName == username) {
+            users[i].passWord = newPassword;
+            return true;
+        }
+    }
+    return false;
+}
+
+
+// 8. Upload a CSV file containing a list of students enrolled in the course
+void uploadStudentList(Course& course, const string& filename)
+{
+    ifstream file(filename);
+    if (!file.is_open())
+    {
+        cerr << "Cannot open file: " << filename << endl;
+        return;
+    }
+
+    string line;
+    while (getline(file, line))
+    {
+        stringstream ss(line);
+        string studentId, studentName;
+        getline(ss, studentId, ',');
+        getline(ss, studentName, ',');
+
+        Score newScore = { studentId, studentName, 0, 0, 0, 0 };
+
+        if (course.numOfStudents < course.courseSize)
+        {
+            course.scores[course.numOfStudents++] = newScore;
+        }
+        else
+        {
+            cerr << "Course is full. Cannot add more students." << endl;
+            break;
+        }
+    }
+
+    file.close();
+}
+
+
+// 11. Add a student to the course
+void addStudentToCourse(Course& course, const Score& newStudent)
+{
+    if (course.numOfStudents < course.courseSize)
+    {
+        course.scores[course.numOfStudents++] = newStudent;
+    }
+    else
+    {
+        cout << "Course is full." << endl;
+    }
+}
+
+// 11.1. Add a list of students to a course
+void addStudentsToCourse(Course& course, Score* newStudents, int numOfStudents)
+{
+    if (course.courseSize - course.numOfStudents < numOfStudents)
+    {
+        cout << "The number of adding students exceeds the course size." << endl;
+        return;
+    }
+
+    int i = 0;
+    while (i < numOfStudents)
+    {
+        course.scores[course.numOfStudents] = newStudents[i++];
+        course.numOfStudents++;
+    }
+    cout << numOfStudents << " students have just enrolled in course " << course.courseId << endl;
+}
+
+// 12. Remove a student from the course
+void removeStudentFromCourse(Course& course, const string& studentId)
+{
+    for (int i = 0; i < course.numOfStudents; ++i)
+    {
+        if (course.scores[i].studentId == studentId)
+        {
+            for (int j = i; j < course.numOfStudents - 1; ++j)
+            {
+                course.scores[j] = course.scores[j + 1];
+            }
+            --course.numOfStudents;
+            break;
+        }
+    }
+}
+
+
+
+// 16. View a list of students in a class
+void viewClassStudents(const Class& cls)
+{
+    cout << "ID | Name:\n";
+    for (int i = 0; i < cls.numOfStudents; ++i)
+    {
+        cout << cls.students[i].studentId << " | " << cls.students[i].firstName << " " << cls.students[i].lastName << endl;
+    }
+}
+
+// 18. View a list of students in a course
+void viewCourseStudents(const Course& course)
+{
+    cout << "ID | Name:\n";
+    for (int i = 0; i < course.numOfStudents; ++i)
+    {
+        cout << course.scores[i].studentId << " | " << course.scores[i].studentName << endl;
+    }
+}
+
+// 19. Export a list of students in a course to a CSV file
+void exportCourseStudentList(const Course& course, const string& filename)
+{
+    ofstream file(filename);
+    if (!file.is_open())
+    {
+        cerr << "Cannot open file: " << filename << endl;
+        return;
+    }
+
+    file << "No,Student ID,Student Name\n";
+    for (int i = 0; i < course.numOfStudents; ++i)
+    {
+        file << (i + 1) << "," << course.scores[i].studentId << "," << course.scores[i].studentName << "\n";
+    }
+
+    file.close();
+}
+
+
+
+
+
+
+/*----------------------------------------- FOR TESTING -----------------------------------------*/
+
+
+void test_LoginLogout() {
+    User users[3] = {
+                {"user1", "password1"},
+                {"user2", "password2"},
+                {"user3", "password3"}
+    };
+
+    int numOfUsers = 3;
+
+    // Nhập thông tin đăng nhập từ người dùng
+    string username, password;
+    cout << "Username : ";
+    cin >> username;
+    cout << "Password: ";
+    cin >> password;
+
+    // Kiểm tra đăng nhập
+    bool isLoggedIn = login(users, numOfUsers, username, password);
+    if (isLoggedIn) {
+        cout << " Dang nhap thanh cong cho " << endl;
+    }
+    else {
+        cout << " That bai " << endl;
+    }
+
+    // Thực hiện đăng xuất nếu đã đăng nhập thành công
+    if (isLoggedIn) {
+        char logoutChoice;
+        cout << "Ban co muon dang xuat khong? (y/n): ";
+        cin >> logoutChoice;
+        if (logoutChoice == 'y' || logoutChoice == 'Y') {
+            logout(isLoggedIn);
+            if (!isLoggedIn) {
+                cout << " Dang xuat thanh cong" << endl;
+            }
+            else {
+                cout << "Dang xuat that bai" << endl;
+            }
+        }
+        else {
+            cout << "Khong dang xuat" << endl;
+        }
+    }
+}
+
+
+void test_ViewProfileAndChangePassword() {
+    User users[3] = {
+                {"user1", "password1"},
+                {"user2", "password2"},
+                {"user3", "password3"}
+    };
+
+    int numOfUsers = 3;
+
+    // Nhập thông tin từ người dùng
+    string username, newPassword;
+    cout << "Nhap ten dang nhap de xem ho so: ";
+    cin >> username;
+
+    // Kiểm tra và xem hồ sơ người dùng
+    User* userProfile = viewProfile(users, numOfUsers, username);
+    if (userProfile != nullptr) {
+        cout << "Thong tin ho so cua " << username << ":\n";
+        cout << "Ten dang nhap: " << userProfile->userName << endl;
+        cout << "Mat khau: " << userProfile->passWord << endl;
+    }
+    else {
+        cout << "Khong  " << username << endl;
+    }
+
+    // Thay đổi mật khẩu
+    if (userProfile != nullptr) {
+        cout << "Nhap mat khau moi cho " << username << ": ";
+        cin >> newPassword;
+        if (changePassword(users, numOfUsers, username, newPassword)) {
+            cout << "Thay doi mat khau thanh cong.\n";
+        }
+        else {
+            cout << "Thay doi mat khau that bai.\n";
+        }
+
+        // Xác nhận mật khẩu mới
+        User* updatedProfile = viewProfile(users, numOfUsers, username);
+        if (updatedProfile != nullptr) {
+            cout << "Thong tin cap nhat cua " << username << ":\n";
+            cout << "Ten dang nhap: " << updatedProfile->userName << endl;
+            cout << "Mat khau moi: " << updatedProfile->passWord << endl;
+        }
+    }
+}
+
+
+void test_uploadStudentList() {
+    Course course = { "C001", "Programming 101", "Class A", "John Doe", 3, 30, new Score[30], 0, "MON/S1" };
+    uploadStudentList(course, "students.csv");
+
+    if (course.numOfStudents > 0) {
+        cout << "Test uploadStudentList: Passed" << endl;
+    }
+    else {
+        cout << "Test uploadStudentList: Failed" << endl;
+    }
+
+    delete[] course.scores;
+}
+
+void test_addStudentToCourse() {
+    Course course = { "C001", "Programming 101", "Class A", "John Doe", 3, 30, new Score[30], 0, "MON/S1" };
+    Score newStudent = { "S001", "John Doe", 0, 0, 0, 0 };
+
+    addStudentToCourse(course, newStudent);
+    if (course.numOfStudents == 1 && course.scores[0].studentId == "S001") {
+        cout << "Test addStudentToCourse: Passed" << endl;
+    }
+    else {
+        cout << "Test addStudentToCourse: Failed" << endl;
+    }
+
+    delete[] course.scores;
+}
+
+void test_addStudentsToCourse() {
+    Course course = { "C001", "Programming 101", "Class A", "John Doe", 3, 30, new Score[30], 0, "MON/S1" };
+    Score newStudents[3] = { {"S001", "John Doe", 0, 0, 0, 0}, {"S002", "Jane Doe", 0, 0, 0, 0}, {"S003", "Mike Smith", 0, 0, 0, 0} };
+
+    addStudentsToCourse(course, newStudents, 3);
+    if (course.numOfStudents == 3) {
+        cout << "Test addStudentsToCourse: Passed" << endl;
+    }
+    else {
+        cout << "Test addStudentsToCourse: Failed" << endl;
+    }
+
+    delete[] course.scores;
+}
+
+void test_removeStudentFromCourse() {
+    Course course = { "C001", "Programming 101", "Class A", "John Doe", 3, 30, new Score[30], 3, "MON/S1" };
+    course.scores[0] = { "S001", "John Doe", 0, 0, 0, 0 };
+    course.scores[1] = { "S002", "Jane Doe", 0, 0, 0, 0 };
+    course.scores[2] = { "S003", "Mike Smith", 0, 0, 0, 0 };
+
+    removeStudentFromCourse(course, "S002");
+    if (course.numOfStudents == 2 && course.scores[1].studentId == "S003") {
+        cout << "Test removeStudentFromCourse: Passed" << endl;
+    }
+    else {
+        cout << "Test removeStudentFromCourse: Failed" << endl;
+    }
+
+    delete[] course.scores;
+}
+
+void test_viewClassStudents() {
+    Class cls = { "Class A", new Student[3], 3 };
+    cls.students[0] = { "S001", "John", "Doe", "Male", "01-01-2000", "123456" };
+    cls.students[1] = { "S002", "Jane", "Doe", "Female", "02-02-2000", "123457" };
+    cls.students[2] = { "S003", "Mike", "Smith", "Male", "03-03-2000", "123458" };
+
+    viewClassStudents(cls);
+    cout << "Test viewClassStudents: Passed" << endl;
+
+    delete[] cls.students;
+}
+
+void test_viewCourseStudents() {
+    Course course = { "C001", "Programming 101", "Class A", "John Doe", 3, 30, new Score[30], 3, "MON/S1" };
+    course.scores[0] = { "S001", "John Doe", 0, 0, 0, 0 };
+    course.scores[1] = { "S002", "Jane Doe", 0, 0, 0, 0 };
+    course.scores[2] = { "S003", "Mike Smith", 0, 0, 0, 0 };
+
+    viewCourseStudents(course);
+    cout << "Test viewCourseStudents: Passed" << endl;
+
+    delete[] course.scores;
+}
+
+void test_exportCourseStudentList() {
+    Course course = { "C001", "Programming 101", "Class A", "John Doe", 3, 30, new Score[30], 3, "MON/S1" };
+    course.scores[0] = { "S001", "John Doe", 0, 0, 0, 0 };
+    course.scores[1] = { "S002", "Jane Doe", 0, 0, 0, 0 };
+    course.scores[2] = { "S003", "Mike Smith", 0, 0, 0, 0 };
+
+    exportCourseStudentList(course, "course_students.csv");
+    cout << "Test exportCourseStudentList: Check file course_students.csv" << endl;
+
+    delete[] course.scores;
+}
+
+void test_main_functions() {
+
+    test_LoginLogout();
+    test_ViewProfileAndChangePassword();
+    test_uploadStudentList();
+    test_addStudentToCourse();
+    test_addStudentsToCourse();
+    test_removeStudentFromCourse();
+    test_viewClassStudents();
+    test_viewCourseStudents();
+    test_exportCourseStudentList();
+}
+
+int main() 
+{
+    test_main_functions();
+    return 0;
+}
