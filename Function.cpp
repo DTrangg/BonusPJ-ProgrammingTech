@@ -191,6 +191,7 @@ void uploadStudentList(Course &course, const string &filename)
     }
 
     file.close();
+    cout << "-> Students uploaded from " << filename << " successfully." << endl;
 }
 
 // 9.1. View a course
@@ -355,6 +356,7 @@ void deleteCourse(string courseID)
 void viewStudentCourses(string studentId)
 {
     bool found = false;
+    cout << "-> List of courses:\n";
     for (int i = 0; i < currentSemester->numOfCourses; ++i)
     {
         Course currentCourse = currentSemester->courses[i];
@@ -398,7 +400,7 @@ void viewListOfClasses()
 void viewClassStudents(const Class &cls)
 {
     cout << "-> List of students in " << cls.className << " class:" << endl;
-    cout << "ID | Name:\n";
+    cout << "ID | Name\n------------\n";
     for (int i = 0; i < cls.numOfStudents; ++i)
     {
         cout << cls.students[i].studentId << " | " << cls.students[i].firstName << " " << cls.students[i].lastName << endl;
@@ -409,7 +411,7 @@ void viewClassStudents(const Class &cls)
 void viewCourseStudents(const Course &course)
 {
     cout << "-> List of students in course " << course.courseId << ":" << endl;
-    cout << "ID | Name:\n";
+    cout << "ID | Name\n------------\n";
     for (int i = 0; i < course.numOfStudents; ++i)
     {
         cout << course.scores[i].studentId << " | " << course.scores[i].studentName << endl;
@@ -495,7 +497,6 @@ void viewCourseScoreboard(string courseId)
     for (int i = 0; i < num; i++)
     {
         viewStudentScore(courseId, currentSemester->courses[check].scores[i].studentId);
-        cout << endl;
     }
 }
 
@@ -588,15 +589,15 @@ void viewClassScoreboard(string &className)
                     {
                         if (course.scores[m].studentId == student.studentId)
                         {
-                            cout << "  + Course: " << course.courseName << ", Final Mark: " << course.scores[m].finalMark << endl;
+                            cout << "  + Course: " << course.courseName << ", Total Mark: " << course.scores[m].totalMark << endl;
                         }
                     }
                 }
 
                 double semesterGPA = calculateSemesterGPA(student, *currentSemester);
                 double overallGPA = calculateOverallGPA(student);
-                cout << "GPA for this semester: " << semesterGPA << endl;
-                cout << "Overall GPA: " << overallGPA << endl;
+                cout << " GPA for this semester: " << semesterGPA << endl;
+                cout << " Overall GPA: " << overallGPA << endl;
                 cout << endl;
             }
             return;
@@ -790,6 +791,7 @@ void test_updateCourse()
         return;
     }
 
+    cin.ignore();
     cout << "Enter new course ID (or leave empty to keep current): ";
     getline(cin, input);
     const string* courseId = input.empty() ? nullptr : &input;
@@ -960,6 +962,7 @@ void test_updateScore()
         return;
     }
 
+    cin.ignore();
     cout << "Enter new total mark (or leave empty to keep current): ";
     getline(cin, input);
     const double* totalMark = input.empty() ? nullptr : &mark;
@@ -1043,7 +1046,8 @@ void test_viewStudentScoreboard()
     cin >> studentId;
 
     string input;
-
+    
+    cin.ignore();
     cout << "Enter semester ID (or leave empty to view all): ";
     getline(cin, input);
     const string* semesterId = input.empty() ? nullptr : &input;
