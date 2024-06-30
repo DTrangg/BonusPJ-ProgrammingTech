@@ -1,4 +1,4 @@
-﻿#include "Header.h"
+#include "Header.h"
 
 // Log in to the system
 bool login(User* users, int numOfUsers, const string& username, const string& password) {
@@ -74,4 +74,13 @@ int isStudentInCourse(string studentId, Course course)
             return i;
     }
     return -1;
+}
+
+// Check if a class is for 1st-year students
+bool isFirstYearClass(string& className, string& schoolYear) {
+    if (className.length() < 2 || schoolYear.length() < 4) {
+        return false;
+    }
+    string yearPrefix = schoolYear.substr(2, 2); // Get 2 last characters (Ex. 2021-2022 -> "21")
+    return className.substr(0, 2) == yearPrefix;
 }
