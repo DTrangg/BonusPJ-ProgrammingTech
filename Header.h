@@ -28,7 +28,7 @@ struct Student
 struct Class
 {
     string className;  // tên lớp
-    Student *students; // danh sách sinh viên
+    Student* students; // danh sách sinh viên
     int numOfStudents; // sỉ số
 };
 
@@ -52,7 +52,7 @@ struct Course
     string teacher;    // giáo viên phụ trách
     int numOfCredits;  // số tín chỉ
     int courseSize;    // số lượng sinh viên tối đa
-    Score *scores;     // danh sách sinh viên tham gia
+    Score* scores;     // danh sách sinh viên tham gia
     int numOfStudents; // số lượng sinh viên đăng ký
     string session;    // buổi học (vd: MON/S1, TUE/S2 ...)
     // (S1 (07:30), S2 (09:30), S3(13:30), S4 (15:30))
@@ -65,6 +65,15 @@ struct Semester
     string schoolYear; // năm học
     string startDate;  // ngày bắt đầu
     string endDate;    // ngày kết thúc
-    Course *courses;   // danh sách học phần trong học kỳ
+    Course* courses;   // danh sách học phần trong học kỳ
     int numOfCourses;  // số lượng học phần
 };
+
+
+// Global Variables
+Semester* semesters_ = NULL;
+int numOfSemesters_ = 0;
+Semester* currentSemester = NULL;
+
+Class* classes_;
+int numOfClasses_;
